@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Live-Wire Dashboard</title>
+</head>
+<body>
+    <h1>Real-Time Dashboard</h1>
+    <ul>
+        <li>Active Users: <span id="active_users">0</span></li>
+        <li>Total Messages: <span id="total_messages">0</span></li>
+        <li>Errors Today: <span id="errors_today">0</span></li>
+    </ul>
+    <script>
+        let ws = new WebSocket("ws://127.0.0.1:8000/ws/dashboard");
+        ws.onmessage = function(event) {
+            let data = JSON.parse(event.data);
+            document.getElementById('active_users').textContent = data.active_users;
+            document.getElementById('total_messages').textContent = data.total_messages;
+            document.getElementById('errors_today').textContent = data.errors_today;
+        };
+    </script>
+</body>
+</html>
