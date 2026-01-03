@@ -1,7 +1,17 @@
+import os
+from dotenv import load_dotenv
 from pymongo import MongoClient
 
+load_dotenv()
+MONGO_URI = os.getenv("MONGODB_URI")
+client = MongoClient(MONGO_URI)
+
+if not MONGO_URI:
+    raise ValueError("Missing MONGODB_URI in environment variables!")
+client = MongoClient(MONGO_URI)
+
 # Connects to a MongoDB server | Need to figure out how to connect to our existing Database
-client = MongoClient("")
+#client = MongoClient("")
 # Assuming we create a database to store the conversations
 db = client["AI_Popups"]
 conversations = db["Conversations"]
