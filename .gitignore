@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.venv/
+ENV/
+
+# Audio output files
+*.wav
+
+# OS / Editor specific
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Log / temp files
+*.log
+*.tmp
+*.bak
+
+# Python notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings (optional)
+.vscode/
+
+# FFmpeg output
+*.mp4
+*.mkv
+*.webm
