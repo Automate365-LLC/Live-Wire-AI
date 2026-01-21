@@ -127,3 +127,18 @@ The system evaluates potential responses in this strict order (P0 -> P3). The fi
 
 500 Internal Server Error: LLM Service is down (Client may play a "One moment please" filler audio)
 
+## Sprint 3 Demo Acceptance Criteria [S1-WS4-05]
+
+**Overview:** These are the conditions required to mark the Playbook feature as "shippable" for the Sprint 3 Internal Demo.
+
+### 5.1 Success Scenario (Happy Path)
+1. Setup: User uploads "gold_playbook.txt" to Workspace A.
+2. Action: User simulates a call or text input asking about pricing (e.g., "How much does it cost?").
+3. Verification: System retrieves the specific pricing chunk from the text file.
+4. Output (Example): "We offer tiers starting at $99/month. Shall I pull up the comparison?" (Must contain correct data from file).
+
+### 5.2 Failure Scenario (Fallback)
+1. Action: User asks a question NOT in the playbook (e.g., "What is the weather in Tokyo?").
+2. Verification: System detects confidence score < 50% (or no keyword match).
+3. Output (Example): "I don't have that info right now." (System must NOT hallucinate an answer).
+
