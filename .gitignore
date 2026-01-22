@@ -36,3 +36,4 @@ Thumbs.db
 
 # Local Data 
 local_vector_db.json
+vector_index.bin
