@@ -50,6 +50,72 @@ The system evaluates potential responses in this strict order (P0 -> P3). The fi
 - **v0 (MVP):** Local file storage for documents; In-memory vector store.  
 - **v1 (Production):** Cloud Object Storage (S3/GCS) for files; Vector Database (Pinecone/Chroma) for embeddings.
 
+### 2.3 Internal Retrieval Schema (WS4-2.1)
+
+**Overview**  
+Defines the JSON object returned by the retrieval engine to the generation layer.
+
+**Structure**
+
+```json
+{
+  "chunk_id": "UUID",
+  "score": "Integer (Keyword Match Count) or Float (Cosine Similarity)",
+  "text_content": "String (The raw text to be used for RAG)",
+  "metadata": {
+    "source_file": "String",
+    "ingested_at": "Timestamp"
+  }
+}
+```
+
+### 2.4 Grounding Policy [WS4-2.2]
+
+**Rule**  
+WS4 Retrieval and Generation must enforce a **“Playbook-first” grounding policy**.
+
+- **Relevance Metric:** L2 Euclidean Distance from FAISS embeddings (lower = more relevant)  
+- **Threshold:** `1.5` (subject to tuning and embedding model dimensionality)
+
+**Decision Logic**
+
+#### High Confidence Match
+**Condition:**  
+```text
+best_match_score < 1.5
+
+Behavior:
+
+Return retrieved chunks along with metadata:
+- chunk_id
+- source_file
+- ingested_at
+
+WS3 must generate a Grounded Card, including citations from these chunks
+```
+#### Low Confidence Match
+**Condition:** 
+```text
+best_match_score >= 1.5
+
+Behavior:
+
+Return an EMPTY list
+WS3 must generate one of the following:
+- A clarifying question to the user
+- A generic coaching card clearly labeled “generic”
+```
+
+**Additional Notes**
+
+- WS3 must never generate cards from external knowledge if relevant playbook chunks exist
+
+- The numeric threshold is configurable and should be validated during test queries
+
+- Citations are mandatory for grounded cards to ensure traceability (WS4-03 compliance)
+
+- Top-K retrieval must still be performed, but only chunks meeting the threshold contribute to grounded card content
+
 ---
 
 ## 3. Ingestion v0 [S1-WS4-02]
@@ -127,7 +193,7 @@ The system evaluates potential responses in this strict order (P0 -> P3). The fi
 
 500 Internal Server Error: LLM Service is down (Client may play a "One moment please" filler audio)
 
-## Sprint 3 Demo Acceptance Criteria [S1-WS4-05]
+## 5. Sprint 3 Demo Acceptance Criteria [S1-WS4-05]
 
 **Overview:** These are the conditions required to mark the Playbook feature as "shippable" for the Sprint 3 Internal Demo.
 
