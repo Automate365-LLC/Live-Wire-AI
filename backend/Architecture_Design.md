@@ -108,13 +108,69 @@ WS3 must generate one of the following:
 
 **Additional Notes**
 
-- WS3 must never generate cards from external knowledge if relevant playbook chunks exist
+- WS3 must not generate cards from external or non-playbook knowledge sources when relevant playbook chunks are available, unless an explicitly higher-priority policy applies.
 
 - The numeric threshold is configurable and should be validated during test queries
 
 - Citations are mandatory for grounded cards to ensure traceability (WS4-03 compliance)
 
 - Top-K retrieval must still be performed, but only chunks meeting the threshold contribute to grounded card content
+
+Scope Note:
+This rule applies to v0 Playbook grounding only.
+Future knowledge sources must declare explicit priority
+relative to Playbook content in the Response Logic hierarchy.
+
+### 2.5 Grounded Card Schema [WS4-2.3]
+
+**Overview**
+Implements a deterministic, pass-through generator. It formats retrieved playbook content into speakable battle cards without adding new facts or reasoning.
+
+**Function Signature**
+`generate_cards(transcript_window, retrieved_chunks) → cards[]`
+
+**Inputs**
+1. `transcript_window` (string): Recent user speech. Used for relevance context.
+2. `retrieved_chunks` (list): Output from WS4-2.2 Retrieval.
+   - Schema: `{ "chunk_id": "uuid", "text_content": "string", "score": float, "metadata": {} }`
+
+**Output Schema**
+Returns a JSON array of card objects:
+```json
+{
+  "card_id": "uuid-string",
+  "title": "Short headline",
+  "body": "Derived exclusively from source text.",
+  "type": "coaching" | "generic",
+  "grounded": boolean,
+  "source_chunk_ids": ["uuid-1"] 
+}
+```
+**Control Flow Logic**
+
+#### 1. No-Source Condition
+- Trigger: retrieved_chunks is empty or below WS4-2.2 threshold (≥1.5).  
+- Action: Generate 1 generic fallback card.  
+- Props: `grounded=false`, `source_chunk_ids=[]`
+
+#### 2. Source-Backed Condition
+- Trigger: retrieved_chunks meet WS4-2.2 threshold.  
+- Action: Generate 1 grounded card per relevant chunk (up to top 3).  
+- Props: `grounded=true`, each card must reference its specific `chunk_id`
+
+**Card Count Constraint**
+
+The generator produces up to top-k grounded cards, generating one card per relevant retrieved chunk.
+
+If fewer relevant chunks are available, fewer cards are returned.  
+The generator must not fabricate, duplicate, or extrapolate content to meet a numeric target.
+
+
+### Compliance Rules
+1. **Zero Hallucination:** Card body text must be derived exclusively from `text_content`.  
+2. **Traceability:** Every grounded card must link to a `chunk_id`.  
+3. **Deterministic Output:** Same inputs produce the exact same cards.  
+4. **Grounding Threshold Enforcement:** Only generate grounded cards if chunks meet WS4-2.2 relevance threshold.
 
 ---
 
