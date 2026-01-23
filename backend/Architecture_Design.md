@@ -14,8 +14,8 @@ The system evaluates potential responses in this strict order (P0 -> P3). The fi
 |----------|------------------|-----------------------------------------------------------|------------------------------------------------------------------------|
 | P0       | Compliance Layer  | If the query touches on Legal/Compliance/Pricing.       | Strict Verbatim: Block generation. Output pre-approved static text only. ("I cannot provide legal advice...") |
 | P1       | Contextual RAG    | Input detected: High semantic similarity (>75%) to content in the Ingested Playbook. | Paraphrase: Generate response using only the retrieved context from the Playbook. |
-| P2       | Objection Handling| Input detected: Recognized sales objection pattern (e.g., "It's too expensive") with no P1 match. | Generalize: Retrieve standard objection script from the System Prompt. |
-| P3       | Fallback (Safety) | Input detected: No match in P0, P1, or P2 (Confidence < 50%). | Silent/Safe: "I don't have that info right now." (Do not hallucinate). |
+| P2       | Objection Handling| Input detected: Recognized sales objection pattern (e.g., "It's too expensive") with no P1 match. | Generalize: Retrieve a predefined objection script from system-controlled templates (non-playbook, static). |
+| P3       | Fallback (Safety) | Input detected: No match in P0, P1, or P2 (Confidence < 50%). | Safe fallback response. Return a non-committal reply indicating lack of knowledge. No hallucination. |
 
 ### 1.2 Response Formatting Rules [WS4-02]
 
@@ -60,7 +60,7 @@ Defines the JSON object returned by the retrieval engine to the generation layer
 ```json
 {
   "chunk_id": "UUID",
-  "score": "Integer (Keyword Match Count) or Float (Cosine Similarity)",
+  "score": "Float (Similarity or Distance metric)",
   "text_content": "String (The raw text to be used for RAG)",
   "metadata": {
     "source_file": "String",
