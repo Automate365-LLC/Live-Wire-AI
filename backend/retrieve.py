@@ -54,7 +54,7 @@ def get_resources():
     return _model, _index, _db
 
 
-def search(query, top_k=3):
+def retrieve_chunks(query, top_k=3):
     """
     Retrieval API and Grounding Policy Enforcement
     Returns:
@@ -115,11 +115,12 @@ def search(query, top_k=3):
     logger.info(f"Returning {len(results)} grounded results")
     return results
 
+# --- TEST BLOCK ---
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("query", help="The question to ask", nargs='?')
     args = parser.parse_args()
     q = args.query if args.query else input("Enter question: ")
     
-    response = search(q)
+    response = retrieve_chunks(q)
     print(json.dumps(response, indent=2))
