@@ -15,7 +15,7 @@ INDEX_FILE = os.path.join(BASE_DIR, "vector_index.bin")
 # Grounding Policy
 # L2 Distance: Lower is better. 0 = Exact Match.
 # Scores > 1.5 usually mean the text is unrelated.
-DISTANCE_THRESHOLD = 1.5 
+DISTANCE_THRESHOLD = 1.2
 
 # Logging goes to stderr by default, so it will NOT interfere with
 # JSON output sent to stdout (important for WS3 integration)

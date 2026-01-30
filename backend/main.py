@@ -1,7 +1,7 @@
+import json
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from pydantic import BaseModel
 from dotenv import load_dotenv
-#from database import save_conversation
 #import os
 import logging
 from typing import List, Dict, Any
@@ -10,6 +10,7 @@ from typing import List, Dict, Any
 from retrieve import retrieve_chunks
 from card_generator import generate_cards
 import ghl_api
+# from database import save_conversation # TODO: Update database.py to handle JSON, then uncomment
 
 # Load environment variables
 load_dotenv()
@@ -68,31 +69,34 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             # 1. RECEIVE (Audio Transcript)
-            data = await websocket.receive_text()
-            logger.info(f" Received: {data}")
+            raw_data = await websocket.receive_text()
+            try:
+                # Handle both Raw Text (v0.1) and JSON (Arch Spec)
+                input_json = json.loads(raw_data)
+                query_text = input_json.get("transcript_window", "")
+            except json.JSONDecodeError:
+                # Fallback for simple text stream
+                query_text = raw_data   
+            logger.info(f" Processing: {query_text}")
 
-            # Dummy client info (replace with real logic later)
-            client_info = ghl_api.fetch_client_data("client_id")
+            # Placeholder for client context
+            # client_info = ghl_api.fetch_client_data("client_id")
 
             # 2. RETRIEVE 
             # Query the vector DB using your validated logic
-            relevant_chunks = retrieve_chunks(data)
+            relevant_chunks = retrieve_chunks(query_text, top_k=5)
             logger.info(f" Retrieved {len(relevant_chunks)} chunks for context")
 
             # 3. GENERATE CARDS
             #This gaurantees zero hallucination
-            cards = generate_cards(data, relevant_chunks)
+            cards = generate_cards(query_text, relevant_chunks)
 
             # 4. RESPOND
-            # CRITICAL: Send JSON object, not raw text strings
             await websocket.send_json(cards)
             logger.info(f" Sent {len(cards)} cards to client")
 
-
-        """# TODO: Update database.py to handle JSON card data
-         # Save in MongoDB
-            save_conversation("client_id", response_text)"""
-
+            # 5. LOGGING (TODO)
+            # save_conversation("client_id", cards)
         
     except WebSocketDisconnect:
         logger.info(" Client disconnected")

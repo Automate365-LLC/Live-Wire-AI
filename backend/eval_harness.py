@@ -6,16 +6,21 @@ from card_generator import generate_cards
 # Hardcoded queries for reproducible regression testing.
 # Mix of Hits (expect grounded), Misses (chit-chat), and Noise (irrelevant)
 TEST_CASES = [
-    {"query": "What is the pricing for the enterprise plan?", "expect_hit": True},
-    {"query": "Do you integrate with Salesforce?", "expect_hit": True},
-    {"query": "How do you compare to Competitor X?", "expect_hit": True},
-    {"query": "What is your refund policy?", "expect_hit": True},
-    {"query": "Can I deploy this on-premise?", "expect_hit": False},  # Adjusted for grounding threshold
-    {"query": "Hello, how are you?", "expect_hit": False},            
-    {"query": "What is the weather in Tokyo?", "expect_hit": False},  
+    # --- HITS (Content exists in playbook) ---
+    {"query": "How much does it cost per month?", "expect_hit": True},    
+    {"query": "Do you integrate with Zapier?", "expect_hit": True},       
+    {"query": "Is my data secure and SOC2 compliant?", "expect_hit": True}, # Matches "fully SOC2 compliant"
+    {"query": "What is the refund policy?", "expect_hit": True},          # Matches "14-day money-back"
+    
+    # --- MISSES (Content NOT in playbook -> Should return Generic) ---
+    {"query": "Do you integrate with Salesforce?", "expect_hit": False},  
+    {"query": "Do you have an enterprise plan?", "expect_hit": False},   
+    {"query": "Can I deploy this on-premise?", "expect_hit": False},      
+    
+    # --- NOISE (Irrelevant -> Should return Generic) ---
+    {"query": "What is the weather in Tokyo?", "expect_hit": False},      
     {"query": "Tell me a joke.", "expect_hit": False},                
-    {"query": "Is there a discount for startups?", "expect_hit": True},
-    {"query": "security compliance SOC2", "expect_hit": True},
+    {"query": "Hello, how are you today?", "expect_hit": False},            
 ]
 
 # Logging configuration
