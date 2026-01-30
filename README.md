@@ -1,4 +1,32 @@
-# Transcriber Backend
+# LiveWire AI Backend
+
+## Current Status (v0.1)
+Real-time sales coaching backend using WebSocket streaming and Grounded Retrieval (RAG).
+
+### key Features
+- **WebSocket API:** Real-time audio transcript processing.
+- **Grounded Generation:** Zero-hallucination advice based on playbooks.
+- **Retrieval API:** dedicated endpoint (`POST /retrieve`) for searching playbooks.
+- **Vector Search:** Local FAISS database with Semantic Search.
+
+### 🛠️ Quick Start
+1. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Start the Server:**
+```bash
+    cd backend
+    uvicorn main:app --reload
+```
+3. **Test the API:**
+    Open http://127.0.0.1:8000/docs
+
+---
+
+# Legacy Tools (Transcriber Backend)
+
 
 This module records both microphone and system audio simultaneously, merges them into a single stereo file, and saves it locally.
 
