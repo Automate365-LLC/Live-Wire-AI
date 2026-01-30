@@ -63,7 +63,6 @@ def ingest_playbook():
     index.add(np.array(embeddings).astype('float32'))
 
     # Save JSON (Data) + FAISS (Vectors)
-    # CRITICAL: The order of JSON list MUST match order of FAISS index!
     with open(DB_FILE, 'w', encoding='utf-8') as f:
         json.dump(database_records, f, indent=2)
     
